@@ -306,7 +306,7 @@ class DES ():
                 j+=1
          #print (self.R)
          #print (self.R[3])
-         #Apply Expanding 48 bit statrting from  i =1
+         """Apply Expanding 48 bit statrting from  i =1"""
          __expansion = [
 		31,  0,  1,  2,  3,  4,
 		 3,  4,  5,  6,  7,  8,
@@ -317,6 +317,7 @@ class DES ():
 		23, 24, 25, 26, 27, 28,
 		27, 28, 29, 30, 31,  0
 	]
+         
          m = 1
          while (m <= 16):
             J=0
@@ -329,7 +330,35 @@ class DES ():
             self.ER.append(NowER)
             self.EL.append(NowEL)
             m+=1
-         #print (len (self.ER[2]))
+         #print (len (self.ER[0]))
+         #Perform Exclusive-or E(R[i-1]) with K[i].
+         self.Exclusive_or()
+    def  Exclusive_or(self):
+        
+        """E(R[i-1]) with K[i].
+            XOR: If one, and only one, of the expressions evaluates to True, result is True Perform Exclusive-or E(R[i-1]) with K[i].�
+        0 xor 0 = 0 , 1 xor 1 = 0 ,  0 xor 1 = 1 , 1 xor 0 = 1
+        """
+        print (1 ^ 0 )
+        print (0 ^ 0)
+        print (1^1)
+        print (0 ^1)
+        i=0
+        self.ResultXOR = []
+        while (i <=16):
+            j = 0
+            NowRes = []
+            while (j < 48 ):
+                currentbit =   int(self.ER [i][j]) ^ int(self.k [i][j]) 
+                NowRes.append (currentbit)
+                j+=1
+            self.ResultXOR.append (NowRes)
+            i+=1
+
+        print (len ((self.ResultXOR[2])))
+            
+        
+  
                 
         
                 
