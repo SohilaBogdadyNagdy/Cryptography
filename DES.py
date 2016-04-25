@@ -6,25 +6,27 @@
 #DES is a "symmetrical" encryption algorithm: same key that is used for encryption is used to decrypt the message.
 import sys
 class DES ():
-    def __init__(self, key):
+    def __init__(self, key,Data):
         self.key = key
         #convert string to byte in python
         if  (len (key) != 8 ):
            raise ValueError ("key should be 8 bytes = 64 bits ")
         elif (len(key) == 8 ):
-            
            self.enkey= key.encode (encoding='UTF-8')
            #binary version of key
            self.original= ''.join(format(x, 'b') for x in bytearray(self.enkey))
-           print (self.original)
+           #print (self.original)
            #print (len (self.original))
            # put original in list
            self.listkey=list (self.original)
            #print (self.listkey)
+           self.Data = Data
            self .__pc1method__()
+           
      
     def   __pc1method__(self):
-        print (self.listkey)
+        print ("pc1method")
+        #print (self.listkey)
         #to make correct permutation on list key we need add bit at the begining each row 
         self.listkey.insert(0,'0')
         self.listkey.insert(8,'0')
@@ -48,39 +50,39 @@ class DES ():
                      ]
         #sort listkey according to permutation number #1
         self.listkeypc1 =  []
+        #print ("test here")
         i = 56
         while (i >= 0):
             self.listkeypc1.append (self.listkey[i])
             i -=8
-            i=57
+        i=57
         while (i >=1):
             
             self.listkeypc1.append(self.listkey[i])
             i = i-8
-            i=58
+        i=58
         while (i>=2):
             self.listkeypc1.append(self.listkey[i])
             i-=8
-            i=59
+        i=59
         while (i>=35):
             
             self.listkeypc1.append(self.listkey[i])
             i-=8
-            i=62
+        i=62
         while (i>=6):
             self.listkeypc1.append(self.listkey[i])
             i-=8
-            i=61
+        i=61
         while (i>=5):
             self.listkeypc1.append(self.listkey[i])
             i-=8
-            i=60
+        i=60
         while (i>=4):
             self.listkeypc1.append(self.listkey[i])
             i-=8
-            i=27
+        i=27
         while (i>=3):
-            
             self.listkeypc1.append(self.listkey[i])
             i-=8
                 #print (self.listkeypc1)
@@ -88,10 +90,13 @@ class DES ():
                 # Split the permuted key into two halves. The first 28 bits are called C[0] and the last 28 bits are called D[0].
         self.C = self.listkeypc1[:28]
         self.D =self.listkeypc1[28:]
-        print (self.C)
-                # Calculate the 16 sub keys. Start with i = 1.
         self.createsubkeys()
+        #print (self.C)
+        #print ("fff")
+                # Calculate the 16 sub keys. Start with i = 1.
+        
     def createsubkeys(self) :
+        print ("sub keys")
         print ("create 16 subkeys")
         self.c=[self.C]
         self.d=[self.D]
@@ -148,9 +153,9 @@ class DES ():
         self.Permute_the_concatenation()
        
     def  Permute_the_concatenation(self):    
-       #print ("hello in permutation 2 ")
+       print ("hello in permutation 2 ")
        #print (self.c)
-       print (self.c[0][25])
+       #print (self.c[0][25])
        self.Concat = []
        j=0
        #print (self.c[0])
@@ -158,7 +163,7 @@ class DES ():
        while (j <= 16 ):
           self.Concat.append (self.c[j] + self.d[j])
           j=j+1
-       print (len (self.Concat) )
+       #print (len (self.Concat) )
        self.__pc2method__()
     def  __pc2method__(self):
         __pc2 = [
@@ -183,13 +188,177 @@ class DES ():
                  i+=1
             self.k.append(self.mid)
             j+=1
-        print (self.Concat[16] )
-        print  (self.k[16])
+        self.__processEnteredData()
+        #print (self.Concat[16] )
+        #print  (self.k[16])
+            
+    def __processEnteredData(self):
+        #block of data must be 64 bit  data
+        if  (len (self.Data) ==8 ):
+            print ("no  padding ")
+            self.MakeListORPadding() 
+        elif (len (self.Data) > 8 ):
+            print ("block is too large")
+            self.MakeListORPadding() 
+        else :
+            print ("padding")
+            self.MakeListORPadding() 
+    def  MakeListORPadding (self):
+           self.enData= self.Data.encode (encoding='UTF-8')
+           #binary version of key
+           self.databit= ''.join(format(x, 'b') for x in bytearray(self.enData))
+           #print (self.databit)
+           self.listDataBits=list (self.databit)
+           #print (self.listDataBits)
+           #print (len (self.listDataBits))
+           #padding 
+           while (len (self.listDataBits) < 64 ):
+               self.listDataBits.append('0')
+           #print (len (self.listDataBits))
+           #print (self.listDataBits)
+           if (len (self.listDataBits ) > 64):
+               self.listDataBits = self.listDataBits[:64]
+               #print (self.listDataBits )
+               #print (len (self.listDataBits))
+               #Perform the following IP on data block.�
+               self.Initial_Permutation  ()
+    def  Initial_Permutation  (self):
+        __ip = [ 57, 49, 41, 33, 25, 17, 9,  1,
+	    59, 51, 43, 35, 27, 19, 11, 3,
+	    61, 53, 45, 37, 29, 21, 13, 5,
+	    63, 55, 47, 39, 31, 23, 15, 7,
+	    56, 48, 40, 32, 24, 16, 8,  0,
+	    58, 50, 42, 34, 26, 18, 10, 2,
+	    60, 52, 44, 36, 28, 20, 12, 4,
+	    62, 54, 46, 38, 30, 22, 14, 6
+	]
+        self.IP = []
+        l=0
+        while (l <64 ):
+            self. IP.append (self.listDataBits [__ip[l]])
+            l = l+1
+        #print (self.IP)
+        self.L=[self.IP[:32]]
+        self.R=[self.IP[32:]]
+        __expansion = [
+		31,  0,  1,  2,  3,  4,
+		 3,  4,  5,  6,  7,  8,
+		 7,  8,  9, 10, 11, 12,
+		11, 12, 13, 14, 15, 16,
+		15, 16, 17, 18, 19, 20,
+		19, 20, 21, 22, 23, 24,
+		23, 24, 25, 26, 27, 28,
+		27, 28, 29, 30, 31,  0
+	]
+        self.ER=[[]]
+        self.EL=[[]]
+        J=0
+        while (J<48):
+            self.ER[0].append(self.R[0][ __expansion[J]])
+            self.EL[0].append(self.L[0][ __expansion[J]])
+            J=J+1
+        #print (self.EL)
+        #print (len (self.EL[0]))
+        self.Sub_key_to_DataBlock()      
+    def  Sub_key_to_DataBlock(self):
+        #here we Apply the 16 sub keys to the data block.
+         j =1
+         while (j <=16 ):
+            if (j==1 or j==2 or j==9 or j==16 ):
+                
+               copypofcurrentlist=self.L[j-1][:]
+               fe=copypofcurrentlist[0]
+               shiftingcurrentlist= copypofcurrentlist[1:]
+               shiftingcurrentlist.append(fe)
+               self.L.append(shiftingcurrentlist)
+               j+=1
+            else:
+                
+                copypofcurrentlist=self.L[j-1][:]
+                fe=copypofcurrentlist[0]
+                se=copypofcurrentlist[1]
+                shiftingcurrentlist= copypofcurrentlist[2:]
+                shiftingcurrentlist.append(fe)
+                shiftingcurrentlist.append(se)
+                self.L.append(shiftingcurrentlist)
+                j+=1
+         #print (self.L)
+         #print (self.L[3])
+         j =1
+         while (j <=16 ):
+            if (j==1 or j==2 or j==9 or j==16 ):
+                
+               copypofcurrentlist=self.R[j-1][:]
+               fe=copypofcurrentlist[0]
+               shiftingcurrentlist= copypofcurrentlist[1:]
+               shiftingcurrentlist.append(fe)
+               self.R.append(shiftingcurrentlist)
+               j+=1
+            else:
+                
+                copypofcurrentlist=self.R[j-1][:]
+                fe=copypofcurrentlist[0]
+                se=copypofcurrentlist[1]
+                shiftingcurrentlist= copypofcurrentlist[2:]
+                shiftingcurrentlist.append(fe)
+                shiftingcurrentlist.append(se)
+                self.R.append(shiftingcurrentlist)
+                j+=1
+         #print (self.R)
+         #print (self.R[3])
+         #Apply Expanding 48 bit statrting from  i =1
+         __expansion = [
+		31,  0,  1,  2,  3,  4,
+		 3,  4,  5,  6,  7,  8,
+		 7,  8,  9, 10, 11, 12,
+		11, 12, 13, 14, 15, 16,
+		15, 16, 17, 18, 19, 20,
+		19, 20, 21, 22, 23, 24,
+		23, 24, 25, 26, 27, 28,
+		27, 28, 29, 30, 31,  0
+	]
+         m = 1
+         while (m <= 16):
+            J=0
+            NowER =[]
+            NowEL =[]
+            while (J<48):
+                NowER.append (self.R[m][__expansion[J]])
+                NowEL .append(self.L[m][ __expansion[J]])
+                J=J+1
+            self.ER.append(NowER)
+            self.EL.append(NowEL)
+            m+=1
+         #print (len (self.ER[2]))
+                
+        
+                
+        
+        
+
+      
+                             
+
+        
+        
+        
+               
+
+
+           
+           
+        
+
+    
+            
+            
+            
+        
 
 
 
 #test
-test = DES('encrypte')
+test = DES('encrypte','mydataaaaaaaa')
 
 
 
