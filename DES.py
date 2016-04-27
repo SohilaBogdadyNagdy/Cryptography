@@ -445,16 +445,16 @@ class DES ():
 		 [2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11]
                                     ]
 	]
-        print ( __sbox [0][0][5])
+       # print ( __sbox [0][0][5])
 
-        print (self.B[0])
+        #print (self.B[0])
         m = self.B[0][0][0] + self.B[0][0][5]
         n = self.B[0][0][1:5]
         #print (m)
         #convert m to integer value
         #print (self.B[0][0][5])
         mvalue = ( 2* self.B[0][0][0] ) + (1* self.B[0][0][5])
-        print (mvalue )
+        #print (mvalue )
         #convert n to integer value
         #print (n)
         #print (n[3])
@@ -462,8 +462,44 @@ class DES ():
         nvalue = nvalue + (n[2] *2)
         nvalue = nvalue + (n[1] *4)
         nvalue = nvalue + (n[0] *8 )
-        print (nvalue )
-        
+        #print (nvalue )
+        #in Substitute the values found in the S-boxes for all B[j].
+        i = 0
+        while (i < 8 ):
+            m  = self.B[0][i][0] + self.B[0][i][0]
+            intMValue= (2*self.B[0][i][0] )+ (1* self.B[0][i][5])
+            n = self.B[0][i][1:5]
+            intNvalue = n[3]*1
+            intNvalue = intNvalue  +(n[2]*2)
+            intNvalue = intNvalue + (n[1]*4)
+            intNvalue = intNvalue  + (n[0]*8)
+            #here we use __sbox of i
+            value = __sbox [i] [intMValue][intNvalue]
+            #print (value )
+            currentvalue=list ( bin (value ))
+            #print (currentvalue )
+            currentvalue = currentvalue [2:]
+            if (len(currentvalue) <4 ):
+                while (len (currentvalue) !=4 ):
+                    currentvalue.insert (0,'0')
+            #convert value to binary and replace it with value in B[0][i]
+            self.B[0][i] =currentvalue
+            i+=1
+        #print (self.B)
+        self.___concatB()
+    def  ___concatB(self):
+        """Permute the concatenation of B[1] through B[8] """
+        self.ConcatinSring= ""
+        #print (self.B[0])
+        k = 0
+        while (k<8):
+            l=0
+            while (l<4):
+                self.ConcatinSring =self.ConcatinSring+ str (self.B[0][k][l])
+                l+=1
+            k+=1
+        print (len (self.ConcatinSring))
+        #next step is Permutation P
         
         
         
